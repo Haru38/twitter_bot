@@ -16,6 +16,15 @@ class Bot():
         self.lock = lock
         self.last_rep = ''
 
+    def auto_follow(self):
+        #新しい方から順番に20人取ってくる
+        self.lock.acquire()
+        follower_list= self.api.followers()#count = 20
+        for follower in follower_list:
+            follower_id= follower.id
+            self.api.create_friendship(follower.id)#指定したidのuserをフォロー
+        self.lock.release()
+
     def auto_tweet(self):
         print("start auto tweet")
         self.lock.acquire()

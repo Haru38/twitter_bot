@@ -34,6 +34,16 @@ def auto_tweets(bot, interval, initsleep=None):
         bot.auto_tweet()
         time.sleep(interval)
 
+def auto_follows(bot, interval, initsleep=None):
+    if initsleep==None:
+        now = datetime.datetime.now()
+        initsleep = interval-(now.minute*60+now.second+now.microsecond/100000)%interval
+    print(f'[auto follow] initial sleep: {initsleep} s')
+    time.sleep(initsleep)
+    print(f"[auto follow] started at {datetime.datetime.now()}")
+    while True:
+        bot.auto_follow()
+        time.sleep(interval)
 
 if __name__ == '__main__':
     #ツイッターapiの作成
@@ -49,6 +59,9 @@ if __name__ == '__main__':
     auto_reply_thread = threading.Thread(target=auto_reply, args=(bot,5*60))
     #自動ツイート用のスレッド
     auto_tweet_thread = threading.Thread(target=auto_tweets, args=(bot,60*60))
+    #自動フォローバック用のスレッド
+    auto_follow_thread = threading.Thread(target=auto_follows, args=(bot,1*60))
 
     auto_reply_thread.start()
     auto_tweet_thread.start()
+    auto_follow_thread.start()
